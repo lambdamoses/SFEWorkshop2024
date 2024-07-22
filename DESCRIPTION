@@ -1,16 +1,22 @@
-Package: BuildABiocWorkshop
-Title: Bioconductor or R Workshop Template and Github Actions
-Version: 2.0.1
+Package: SFEWorkshop2024
+Title: Multiscale ESDA with SpatialFeatureExperiment and Voyager
+Version: 0.99.0
 Authors@R: 
-    person(given = "Sean",
-           family = "Davis",
-           role = c("aut", "cre"),
-           email = "seandavi@gmail.com",
-           comment = c(ORCID = "0000-0002-8991-6458"))
-Description: This package serves as a template for using github actions to 
-    prepare a Bioconductor Workshop package for use. In particular,
-    a pkgdown website and docker image are generated based on workflow 
-    settings. 
+    c(person("Lambda", "Moses", email = "dl3764@columbia.edu", 
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0002-7092-9427")),
+    person("Alik", "Huseynov",
+    comment = c(ORCID = "0000-0002-1438-4389"),
+    role = "aut"),
+    person("Lior", "Pachter", email = "lpachter@caltech.edu",
+    role = c("aut", "ths"),
+    comment = c(ORCID = "0000-0002-9164-6231")))
+Description: This workshop showcases new features in SpatialFeatureExperiment
+    and Voyager, including support for transcript spot geometries in 
+    rowGeometries, plotting transcript spots, aggregating transcript spots with
+    a spatial grid or any geometry, aggregating cell level data with a spatial
+    grid or any geometry, splitting SFE objects with geometries, and improved
+    support for images and affine transformations.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -19,10 +25,38 @@ RoxygenNote: 7.1.0
 Depends: 
     Biobase
 Suggests: 
+    BiocNeighbors,
+    BiocParallel,
+    BiocStyle,
+    BiocSingular,
+    bluster,
+    dplyr,
+    EBImage,
+    fs,
+    ggplot2,
     knitr,
+    Matrix,
+    metrica,
+    patchwork,
+    pkgdown,
+    rjson,
     rmarkdown,
-    pkgdown
-URL: https://seandavi.github.io/BuildABiocWorkshop/
-BugReports: https://github.com/seandavi/BuildABiocWorkshop/issues/new/choose
+    scales,
+    scater,
+    scran,
+    Seurat,
+    sf,
+    sfarrow,
+    SFEData,
+    SingleCellExperiment,
+    sparseMatrixStats,
+    SpatialFeatureExperiment,
+    stringr
+    terra,
+    tibble,
+    tidyr,
+    Voyager
+URL: https://lambdamoses.github.io/SFEWorkshop2024/
+BugReports: https://github.com/lambdamoses/SFEWorkshop2024/issues/new/choose
 VignetteBuilder: knitr
-DockerImage: ghcr.io/seandavi/buildabiocworkshop:latest
+DockerImage: ghcr.io/lambdamoses/sfeworkshop2024:latest

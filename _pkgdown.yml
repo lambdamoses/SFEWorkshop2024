@@ -1,18 +1,16 @@
-url: https://seandavi.github.io/BuildABiocWorkshop
+url: https://lambdamoses.github.io/SFEWorkshop2024
 
 template:
-  params:
-    bootswatch: flatly
-    #ganalytics: UA-99999999-9
-
+  bootstrap: 5
+  bootswatch: united
+  bslib:
+    text-muted: "#cccccc"
 home:
-  title: "BuildABiocWorkshop"
+  title: "SFEWorkshop2024"
   type: inverse
 
-
 navbar:
-  right:
-   - icon: fa-github
-     href: https://github.com/seandavi/BuildABiocWorkshop
-     
-
+  title: "SFEWorkshop2024"
+  left:
+    - text: "Workshop"
+      href: articles/workshop.html

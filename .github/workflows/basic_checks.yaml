@@ -24,7 +24,7 @@ jobs:
           BiocManager::install(ask=FALSE)
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
-        
+
       - name: Cache R packages
         if: runner.os != 'Windows'
         uses: actions/cache@v4
@@ -38,6 +38,8 @@ jobs:
           BiocManager::repositories()
           remotes::install_deps(dependencies = TRUE, repos = BiocManager::repositories())
           remotes::install_cran("rcmdcheck")
+          remotes::install_github("pachterlab/SpatialFeatureExperiment", ref = "devel")
+          remotes::install_github("pachterlab/Voyager", ref = "devel")
         shell: Rscript {0}
 
       - name: Check
