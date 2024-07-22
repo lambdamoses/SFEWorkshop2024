@@ -199,8 +199,11 @@ dir_tree(dir_use)
 ```
 
 The GeoParquet file is much smaller than the original CSV file:
-```{r, results='hold'}
+```{r}
 file_size(file.path(dir_use, "detected_transcripts.csv"))
+```
+
+```{r}
 file_size(file.path(dir_use, "detected_transcripts.parquet"))
 ```
 
@@ -691,7 +694,8 @@ While the images in the MERFISH dataset above only have 1 channel, this image ha
 One can select up to 3 channels (in the order of RGB) for plotting; `channel` must be specified when there are more than 3 channels in the image, and this may not be colorblind friendly
 
 ```{r}
-plotImage(sfe_xen, image_id = "morphology_focus", channel = 3:1)
+plotImage(sfe_xen, image_id = "morphology_focus", channel = 3:1, 
+          normalize_channels = TRUE)
 ```
 
 Or plot the channels separately in gray scale
@@ -822,7 +826,7 @@ plotSpatialFeature(sfe_mirror, genes_use[6], colGeometryName = "cellSeg",
                    rowGeometryName = "txSpots", image_id = "morphology_focus",
                    fill = NA, aes_use = "color", linewidth = 0.15,
                    tx_fixed = list(color = "lightgray"),
-                   channel = 3:1, dark = TRUE)
+                   channel = 3:1, dark = TRUE, normalize_channels = TRUE)
 ```
 
 "Mirror" is one of the named transformations; other transformations include scale, transpose, rotate, and translate.
@@ -840,7 +844,7 @@ plotSpatialFeature(sfe_affine, genes_use[6], colGeometryName = "cellSeg",
                    rowGeometryName = "txSpots", image_id = "morphology_focus",
                    fill = NA, aes_use = "color", linewidth = 0.15,
                    tx_fixed = list(color = "lightgray"),
-                   channel = 3:1, dark = TRUE)
+                   channel = 3:1, dark = TRUE, normalize_channels = TRUE)
 ```
 
 What happens to the image after transformation? It's still a BioFormatsImage, which means there's only metadata in memory.
@@ -856,7 +860,8 @@ transformation(getImg(sfe_affine))
 This is similar to [`st_geotransform` in the `stars` package](https://r-spatial.github.io/stars/reference/st_geotransform.html) which puts the transformation in the metadata, not resampling the image. Here in SFE, the image is only resampled when loaded into memory as `ExtImage`.
 
 ```{r}
-plotImage(sfe_affine, image_id = "morphology_focus", channel = 3:1)
+plotImage(sfe_affine, image_id = "morphology_focus", channel = 3:1, 
+          normalize_channels = TRUE)
 ```
 
 ## Spatial aggregation

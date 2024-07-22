@@ -35,6 +35,10 @@ This workshop consists of hands on demos, exercises, and Q&A.
 * [`scater`](https://bioconductor.org/packages/release/bioc/html/scater.html)
 * [`scran`](https://bioconductor.org/packages/release/bioc/html/scran.html)
 * [`SingleCellExperiment`](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
+* [`EBImage`](https://bioconductor.org/packages/release/bioc/html/EBImage.html)
+* [`RBioFormats`](https://bioconductor.org/packages/release/bioc/html/RBioFormats.html)
+* [`sparseMatrixStats`](https://bioconductor.org/packages/release/bioc/html/sparseMatrixStats.html)
+* [`DelayedArray`](https://bioconductor.org/packages/release/bioc/html/DelayedArray.html)
 
 ### Time outline
 

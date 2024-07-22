@@ -35,6 +35,7 @@ Suggests:
     EBImage,
     fs,
     ggplot2,
+    hexbin,
     knitr,
     Matrix,
     metrica,
