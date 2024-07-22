@@ -55,7 +55,6 @@ library(ggplot2)
 library(SingleCellExperiment)
 library(Seurat)
 library(scater)
-library(scran)
 library(SpatialExperiment)
 library(SpatialFeatureExperiment)
 library(SFEData)
@@ -73,9 +72,11 @@ library(metrica)
 theme_set(theme_bw())
 ```
 
+The material here is either taken from the documentation websites of [`SpatialFeatureExperiment`](https://pachterlab.github.io/SpatialFeatureExperiment/) and [`Voyager`](https://pachterlab.github.io/voyager/) (release version; devel version: [SFE](https://pachterlab.github.io/SpatialFeatureExperiment/dev/), [`Voyager`](https://pachterlab.github.io/voyager/dev/)) or will be added to them. Some topics are covered in more details on the documentation websites.
+
 # SFE object construction
 ## From scratch
-An SFE object can be constructed from scratch with the assay matrices and metadata. In this toy example, `dgCMatrix` is used, but since SFE inherits from SingleCellExperiment (SCE), other types of arrays supported by SCE such as delayed arrays should also work.
+An SFE object can be constructed from scratch with the assay matrices and metadata. In this toy example, `dgCMatrix` is used, but since SFE inherits from `SingleCellExperiment` (SCE), other types of arrays supported by SCE such as delayed arrays should also work.
 ```{r}
 # Visium barcode location from Space Ranger
 data("visium_row_col")
@@ -100,31 +101,13 @@ sfe3 <- SpatialFeatureExperiment(list(counts = mat), colData = coords1,
                                 spotDiameter = 0.7)
 ```
 
-When `colData` contains columns for the centroid coordinates, the `spatialCoordsNames` argument specifies which columns in `colData` are for the coordinates, in the same order as x, y, and z (if applicable). If the coordinates are not in `colData`, they can be specified separately in the `spatialCoords` argument:
-
-```{r}
-sfe3 <- SpatialFeatureExperiment(list(counts = mat), 
-                                 spatialCoords = as.matrix(coords1[, c("col", "row")]),
-                                 spotDiameter = 0.7)
-```
-
-More geometries and spatial graphs can be added after calling the constructor.
-
-Geometries can also be supplied in the constructor. 
-```{r}
-# Convert regular data frame with coordinates to sf data frame
-cg <- df2sf(coords1[,c("col", "row")], c("col", "row"), spotDiameter = 0.7)
-rownames(cg) <- colnames(mat)
-sfe3 <- SpatialFeatureExperiment(list(counts = mat), colGeometries = list(foo = cg))
-```
-
 ## Space Ranger output
 Space Ranger output can be read in a similar manner as in `SpatialExperiment`; the returned SFE object has the `spotPoly` column geometry for the spot polygons. If the filtered matrix is read in, then a column graph called `visium` will also be present, for the spatial neighborhood graph of the Visium spots on tissue. The graph is not computed if all spots are read in regardless of whether they are on tissue.
 
 ```{r}
 dir <- system.file("extdata", package = "SpatialFeatureExperiment")
 sample_ids <- c("sample01", "sample02")
-samples <- file.path(dir, sample_ids)
+(samples <- file.path(dir, sample_ids))
 ```
 
 Inside the `outs` directory:
@@ -151,29 +134,7 @@ Not all Visium datasets have all the files here. The `barcode_fluorescence_inten
                           data = "filtered", images = "hires"))
 ```
 
-The `barcode_fluorescence_intensity.csv` file is read into `colData`. The `spatial_enrichment.csv` file contains Moran's I and its p-values for each gene; it is read into `rowData`. 
-
-Instead of pixels in the full resolution image, the Visium data can be read so the units are microns. Full resolution pixels is related to microns by the spacing between spots, which is known to be 100 microns. The unit can be set in the `unit` argument; for now only "micron" and "full_res_image_pixel" are supported for Visium:
-
-```{r}
-(sfe3 <- read10xVisiumSFE(samples, sample_id = sample_ids, type = "sparse", 
-                          data = "filtered", images = "hires", unit = "micron"))
-```
-
-The unit of the SFE object can be checked:
-```{r}
-unit(sfe3)
-```
-
-At present, this is merely a string and SFE doesn't perform unit conversion.
-
-Unlike in `SpatialExperiment`, SFE reads the Visium images as `terra::SpatRaster` objects, so the images are not loaded into memory unless necessary. Also, with `terra`, if a larger image is associated with the SFE object, it will not be fully loaded into memory when plotted; rather, it's downsampled.
-
-```{r}
-class(imgRaster(getImg(sfe3)))
-```
-
-This example here is for old fashioned Visium; we are working on a read function and vignette for higher resolution [VisiumHD](https://www.10xgenomics.com/products/visium-hd-spatial-gene-expression) data.
+This workshop focuses on imaging based data from Xenium and MERFISH; see [the SFE vignette](https://pachterlab.github.io/SpatialFeatureExperiment) for more details about Visium. This example here is for old fashioned Visium; we are working on a read function and vignette for higher resolution [VisiumHD](https://www.10xgenomics.com/products/visium-hd-spatial-gene-expression) data.
 
 ## Vizgen MERFISH output
 The commercialized MERFISH from Vizgen has a standard output format, that can be read into SFE with `readVizgen()`. Because the cell segmentation from each field of view (FOV) has a separate HDF5 file and a MERFISH dataset can have hundreds of FOVs, we strongly recommend reading the MERFISH output on a server with a large number of CPU cores. Alternatively, some but not all MERFISH datasets store cell segmentation in a `parquet` file, which can be more easily read into R. This requires the installation of [`arrow`](https://arrow.apache.org/).
@@ -188,7 +149,7 @@ dir_use <- VizgenOutput(file_path = file.path(fp, "vizgen"))
 dir_tree(dir_use)
 ```
 
-The optional `add_molecules` argument can be set to `TRUE` to read in the transcript spots; behind the scene, this calls the `formatTxSpots()` function, which can also be called separately.
+Cell segmentations from CellPose are in the `cell_boundaries.parquet` file, which is already GeoParquet, which means it already has the Simple Features rather than just the coordinates of the vertices. No conversion or reformatting is needed. The optional `add_molecules` argument can be set to `TRUE` to read in the transcript spots; behind the scene, this calls the `formatTxSpots()` function, which can also be called separately.
 ```{r}
 (sfe_mer <- readVizgen(dir_use, z = 3L, add_molecules = TRUE))
 ```
@@ -198,7 +159,7 @@ The unit is always in microns. To make it easier and faster to read the data nex
 dir_tree(dir_use)
 ```
 
-The GeoParquet file is much smaller than the original CSV file:
+The GeoParquet file is much smaller than the original CSV file; [`parquet`](https://parquet.apache.org/docs/overview/) from Apache Arrow is designed to be more memory efficient and faster to read than CSV files and is supported in many different programming languages, facilitating interoperability:
 ```{r}
 file_size(file.path(dir_use, "detected_transcripts.csv"))
 ```
@@ -208,7 +169,7 @@ file_size(file.path(dir_use, "detected_transcripts.parquet"))
 ```
 
 ## 10X Xenium output
-SFE supports reading the output from Xenium Onboarding Analysis (XOA) v1 and v2 with the function `readXenium()`. Especially for XOA v2, `arrow` is strongly recommended. The cell and nuclei polygon vertices and transcript spot coordinates are in `parquet` files  Similar to `readVizgen()`, `readXenium()` makes `sf` data frames from the vertices and transcript spots and saves them as GeoParquet files.
+SFE supports reading the output from Xenium Onboarding Analysis (XOA) v1 and v2 with the function `readXenium()`. Especially for XOA v2, `arrow` is strongly recommended. The cell and nuclei polygon vertices and transcript spot coordinates are in `parquet` files (not GeoParquet). `readXenium()` makes `sf` data frames from the vertices and transcript spots and saves them as GeoParquet files.
 
 ```{r}
 dir_use <- XeniumOutput("v2", file_path = file.path(fp, "xenium"))
@@ -230,29 +191,11 @@ The upcoming Xenium Prime (XOA v3) with 5k gene panel poses a challenge to the `
 
 In addition, for large GeoParquet transcript spot files, with the GDAL Parquet driver (requires GDAL version 3.5.0 or higher), we can selectively load transcript spots of genes of interest, for e.g. visualization purposes, with the `readSelectTx()` function. This is the beginning of an on disk shadow of the SFE object. [Genentech's ArtifactDB project](https://github.com/ArtifactDB) aims to implement language-agnostic on-disk serialization of objects such as matrices, `SingleCellExperiment`, and `SpatialExperiment` to facilitate interoperability between programming languages. In R, such serialization is performed with the `alabaster` series of packages on Bioconductor. These GeoParquet files can be the beginning of `alabaster.sfe` whose non-geometric aspects are handled by the existing [`alabaster.sce`](https://github.com/ArtifactDB/alabaster.sce) and [`alabaster.spatial`](https://github.com/ArtifactDB/alabaster.spatial).
 
-## Nanostring CosMX output
-This is similar to `readVizgen()` and `readXenium()`, except that the output doesn't come with images.
-
-```{r}
-dir_use <- CosMXOutput(file_path = file.path(fp, "cosmx"))
-dir_tree(dir_use)
-```
-
-```{r}
-(sfe_cosmx <- readCosMX(dir_use, add_molecules = TRUE))
-```
-
-Processed cell segmentation and transcript spots are also saved in GeoParquet files.
-
-```{r}
-dir_tree(dir_use)
-```
-
 ## Other technologies
-A read function for Visium HD is in progress. Contribution for Akoya, Molecular Cartography, and Curio Seeker are welcome. See the [issues](https://github.com/pachterlab/SpatialFeatureExperiment/issues).
+Nanostring CosMX data, including transcript spots, is processed and read in a similar manner as MERFISH and Xenium data, with the `readCosMX()` function. A read function for Visium HD is in progress. Contribution for Akoya, Molecular Cartography, and Curio Seeker are welcome. See the [issues](https://github.com/pachterlab/SpatialFeatureExperiment/issues).
 
 ## Coercion from `SpatialExperiment`
-SPE objects can be coerced into SFE objects. If column geometries or spot diameter are not specified, then a column geometry called "centroids" will be created.
+Some existing spatial -omics data analysis packages use SPE. SPE objects can be coerced into SFE objects. If column geometries or spot diameter are not specified, then a column geometry called "centroids" will be created.
 ```{r}
 spe <- read10xVisium(samples, sample_ids, type = "sparse", data = "filtered", 
   images = "hires", load = FALSE)
@@ -268,7 +211,7 @@ rownames(spatialCoords(spe)) <- colnames(spe)
 (sfe3 <- toSpatialFeatureExperiment(spe))
 ```
 
-If images are present in the SPE object, they will be converted into `SpatRaster` when the SPE object is converted into SFE. Plotting functions in the `Voyager` package require image classes implemented in SFE (covered later in this workshop) to plot the image behind the geometries. 
+If images are present in the SPE object, they will be converted into `SpatRaster` when the SPE object is converted into SFE. Plotting functions in the `Voyager` package require image classes implemented in SFE (covered later in this workshop) to plot the image behind the geometries because these classes in SFE have the spatial extent needed to make sure that the images are aligned to the geometries in the same coordinate system. 
 
 ## Coercion from `Seurat`
 Seurat objects can be coerced into SFE objects though coercion from SFE to Seurat is not yet implemented.
@@ -287,7 +230,7 @@ sfe_conv_vis
 ```
 
 # Getting, setting, and plotting fields of SFE objects
-Here we demonstrate operations on SFE objects on one of the datasets read in just now, `sfe_xen`, from 10X Xenium XOA v2 data from the human pancreas.
+Here we demonstrate operations on SFE objects on the Xenium and MERFISH datasets read in just now, introducing the getters, setters, and plotting functions along the way with the flow of a basic exploratory analysis.
 
 ## `SingleCellExperiment` getters and setters
 Each SFE object is an SCE object as SFE builds on top of SCE, or inherits from SCE, so all the SCE methods apply. Here "inherits" is just like each bioinformatician is a human, where "bioinformatician" is a bit like SFE and "human" is like SCE. Here we go over SCE getters and setters.
@@ -343,11 +286,6 @@ pca_res <- reducedDim(sfe_xen, "PCA")
 head(pca_res)
 ```
 
-Here the second argument is used to specify which dimension reduction result to get. If it's not specified, then by default the first one is retrieved, so the code below would be equivalent to the previous chunk:
-```{r}
-reducedDim(sfe_xen) |> head()
-```
-
 ```{r}
 # Set PCA embeddings say if you ran PCA elsewhere
 reducedDim(sfe_xen, "PCA") <- pca_res
@@ -359,7 +297,7 @@ reducedDimNames(sfe_xen)
 ```
 
 ## Column geometries
-Column geometries or `colGeometries` are the geometries that correspond to columns of the gene count matrix, such as Visium spots and cells in datasets from a single cell resolution technology. Each SFE object can have multiple column geometries. For example, in a dataset with single cell resolution, whole cell segmentation and nuclei segmentation are two different `colGeometries`. However, for Visium, the spot polygons are the only `colGeometry` obviously relevant, though users can add other geometries such as results of geometric operations on the spot polygons. The different geometries can be get or set with their names; "spotPoly" is the standard name for Visium spot polygons, "cellSeg" for cell segmentation, and "nucSeg" for nucleus segmentation.
+Column geometries or `colGeometries` are the geometries that correspond to columns of the gene count matrix, such as Visium spots and cells in datasets from a single cell resolution technology. Each SFE object can have multiple column geometries. For example, in a dataset with single cell resolution, whole cell segmentation and nuclei segmentation are two different `colGeometries`. However, for Visium, the spot polygons are the only `colGeometry` obviously relevant, though users can add other geometries such as results of geometric operations on the spot polygons. The different geometries can be get or set with their names; "spotPoly" is the standard name for Visium spot polygons, "cellSeg" for cell segmentation, and "nucSeg" for nucleus segmentation. But any name can be used; say cell segmentations from different algorithms can be stored here under different names, say "CellPost" and "watershed", although different segmentations can lead to different grene counts per cell and different number of cells.
 ```{r}
 # Get Visium spot polygons
 (cells <- colGeometry(sfe_xen, "cellSeg"))
@@ -415,6 +353,79 @@ cellSeg(sfe_xen) <- cells
 ```
 
 Exercise: Get and plot nucleus segmentations from `sfe_xen`
+
+While we have `DelayedArray` for large gene count matrices that don't fit into memory, at present the geometries are in memory. I haven't gotten into memory problems from the geometries even from hundreds of thousands of cell polygons on a 2017 MacBook Pro with 8 GB of RAM yet. In a future version, we may try [sedona](https://sedona.apache.org/1.4.1/) or [DuckDB](https://duckdb.org/docs/extensions/spatial.html) combined with [`sdf`](https://github.com/JosiahParry/sdf) to be more general than `sf` to allow geometric operations without loading everything into memory.
+
+## Row geometries
+The `rowGeometry` getter and setter have pretty much the same user interface as the getters and setters covered above:
+```{r}
+(rg <- rowGeometry(sfe_xen, "txSpots"))
+```
+
+Note the `MULTIPOINT Z` here; this is 3D. Geometric operations in `sf` such as finding intersections do work on 3D geometries but only for the x and y dimensions, not for z, because in geographical space, we largely live on the surface of Earth. This is mostly fine for histological space as well because the vast majority of spatial -omics data come from thin sections with much higher x and y resolution much larger x and y extent than z, although there are 3D datasets with numerous serial sections or thick sections with 3D cell segmentations. Since in those cases, the data usually come in discrete z-planes, we might just use multiple polygon geometry columns each for one z-plane instead of something like a mesh in the CGI tradition.
+
+```{r}
+# Setter
+rowGeometry(sfe_xen, "txSpots") <- rg
+```
+
+In the case of transcript spots, there's a special convenience function `txSpots`; I haven't thought of any other use for `rowGeometries` but this is kept general, allowing any type of geometry, in case other use cases come up.
+```{r}
+txSpots(sfe_xen)
+```
+
+The `plotGeometry()` function can plot transcript spots, for all genes or for a few selected genes, distinguished by point shape.
+```{r}
+# bbox is used due to overplotting if plotting the entire example data
+plotGeometry(sfe_xen, rowGeometryName = "txSpots", bbox = bbox, gene = "all")
+```
+
+That's still a lot of spots, definitely overplotting.
+
+Transcript spot density can be plotted in a 2D histogram, here using 20 micron hexagonal grid to show the density of transcripts from all genes
+```{r}
+plotTxBin2D(sfe_xen, binwidth = 20, hex = TRUE)
+```
+
+Plot a few genes here:
+```{r}
+set.seed(29)
+genes_use <- sample(rownames(sfe_xen)[rowData(sfe_xen)$Type == "Gene Expression"], 6)
+# Genes that don't have spots in this bbox are not plotted
+plotGeometry(sfe_xen, rowGeometryName = "txSpots", bbox = bbox, gene = genes_use)
+```
+
+Or plot the transcript spots with other geometries
+```{r}
+plotGeometry(sfe_xen, colGeometryName = c("cellSeg", "nucSeg"),
+             rowGeometryName = "txSpots", bbox = bbox, gene = genes_use)
+```
+
+Transcript spots can also be plotted along with cell level data
+```{r}
+plotSpatialFeature(sfe_xen, "total_counts", colGeometryName = "cellSeg", 
+                   rowGeometryName = "txSpots", rowGeometryFeatures = genes_use,
+                   bbox = bbox, tx_fixed = list(size = 1))
+```
+
+Or plot in dark theme
+```{r}
+plotSpatialFeature(sfe_xen, "total_counts", colGeometryName = "cellSeg", 
+                   rowGeometryName = "txSpots", rowGeometryFeatures = genes_use,
+                   bbox = bbox, dark = TRUE,
+                   tx_fixed = list(size = 1, color = "lightgray"))
+```
+
+When cell level data and transcript spots of the same genes are plotted, each gene will be plotted in a separate panel
+```{r}
+plotSpatialFeature(sfe_xen, genes_use, colGeometryName = "cellSeg", 
+                   rowGeometryName = "txSpots", rowGeometryFeatures = genes_use,
+                   bbox = bbox)
+```
+
+Note that some transcript spots are not in cells; spots in `rowGeometires` don't have to be assigned to cells. While the transcript spots of this data subset fits into memory, when the GDAL Parquet driver is available, the plotting functions can call `readSelectTx()` behind the scene to only selectively read transcripts from a few genes rather than all genes.
+
+Here transcript spots are `sf` data frames. Recent versions of `sf` can convert`sf` to objects in the [`spatstat`](https://spatstat.org) package for [spatial point pattern analyses](https://r-spatial.org/book/11-PointPattern.html).
 
 ## Annotation
 Annotation geometries can be get or set with `annotGeometry()`. In column or row geometries, the number of rows of the `sf` data frame (i.e. the number of geometries in the data frame) is constrained by the number of rows or columns of the gene count matrix respectively, because just like `rowData` and `colData`, each row of a `rowGeometry` or `colGeometry` `sf` data frame must correspond to a row or column of the gene count matrix respectively. In contrast, an `annotGeometry` `sf` data frame can have any dimension, not constrained by the dimension of the gene count matrix. 
@@ -492,75 +503,6 @@ colGraphNames(sfe_xen)
 
 It would be interesting to see the implications of the choice of spatial neighborhood graph and its edge weights to further spatial analyses.
 
-## Row geometries
-The `rowGeometry` getter and setter have pretty much the same user interface as the getters and setters covered above:
-```{r}
-(rg <- rowGeometry(sfe_xen, "txSpots"))
-```
-
-Note the `MULTIPOINT Z` here; this is 3D. Geometric operations in `sf` such as finding intersections do work on 3D geometries but only for the x and y dimensions, not for z. 
-
-```{r}
-# Setter
-rowGeometry(sfe_xen, "txSpots") <- rg
-```
-
-In the case of transcript spots, there's a special convenience function `txSpots`; I haven't thought of any other use for `rowGeometries` but this is kept general, allowing any type of geometry, in case other use cases come up.
-```{r}
-txSpots(sfe_xen)
-```
-
-The `plotGeometry()` function can plot transcript spots, for all genes or for a few selected genes, distinguished by point shape.
-```{r}
-# bbox is used due to overplotting if plotting the entire example data
-plotGeometry(sfe_xen, rowGeometryName = "txSpots", bbox = bbox, gene = "all")
-```
-
-That's still a lot of spots. Plot a few genes here:
-```{r}
-set.seed(29)
-genes_use <- sample(rownames(sfe_xen)[rowData(sfe_xen)$Type == "Gene Expression"], 6)
-# Genes that don't have spots in this bbox are not plotted
-plotGeometry(sfe_xen, rowGeometryName = "txSpots", bbox = bbox, gene = genes_use)
-```
-
-Or plot the transcript spots with other geometries
-```{r}
-plotGeometry(sfe_xen, colGeometryName = c("cellSeg", "nucSeg"),
-             rowGeometryName = "txSpots", bbox = bbox, gene = genes_use)
-```
-
-Transcript spots can also be plotted along with cell level data
-```{r}
-plotSpatialFeature(sfe_xen, "total_counts", colGeometryName = "cellSeg", 
-                   rowGeometryName = "txSpots", rowGeometryFeatures = genes_use,
-                   bbox = bbox, tx_fixed = list(size = 1))
-```
-
-Or plot in dark theme
-```{r}
-plotSpatialFeature(sfe_xen, "total_counts", colGeometryName = "cellSeg", 
-                   rowGeometryName = "txSpots", rowGeometryFeatures = genes_use,
-                   bbox = bbox, show_axes = TRUE, dark = TRUE,
-                   tx_fixed = list(size = 1, color = "lightgray"))
-```
-
-When cell level data and transcript spots of the same genes are plotted, each gene will be plotted in a separate panel
-```{r}
-plotSpatialFeature(sfe_xen, genes_use, colGeometryName = "cellSeg", 
-                   rowGeometryName = "txSpots", rowGeometryFeatures = genes_use,
-                   bbox = bbox)
-```
-
-Note that some transcript spots are not in cells; spots in `rowGeometires` don't have to be assigned to cells. While the transcript spots of this data subset fits into memory, when the GDAL Parquet driver is available, the plotting functions can call `readSelectTx()` behind the scene to only selectively read transcripts from a few genes rather than all genes.
-
-Transcript spot density can be plotted in a 2D histogram, here using 20 micron hexagonal grid
-```{r}
-plotTxBin2D(sfe_xen, binwidth = 20, hex = TRUE)
-```
-
-Here transcript spots are `sf` data frames. Recent versions of `sf` can convert`sf` to objects in the [`spatstat`](https://spatstat.org) package for [spatial point pattern analyses](https://r-spatial.org/book/11-PointPattern.html).
-
 # Images
 In SPE, the images are only used for visualization, but SFE extended the SPE image functionality so large images don't have to be loaded into memory unless necessary. SFE is extensible; more image classes can be implemented by inheriting from the virtual class `AlignedSpatialImage`; "aligned" because a spatial extent must be specified to align the image to the geometries, just like the satellite image aligned to vector geometries of roads and city boundaries. At present, the SFE package implements 3 types of images: `SpatRasterImage`, `BioFormatsImage`, and `ExtImage`.
 
@@ -600,7 +542,8 @@ plot(img)
 
 The image can be plotted behind cell level data in all `Voyager` functions that plot geometries
 ```{r}
-plotSpatialFeature(sfe_mer, features = "transcript_count", colGeometryName = "cellSeg",
+plotSpatialFeature(sfe_mer, features = "transcript_count", 
+                   colGeometryName = "cellSeg",
                    aes_use = "color", fill = NA, # Only color by cell outline
                    image_id = "PolyT_z3", dark = TRUE)
 ```
@@ -623,7 +566,7 @@ This way we can relate data from the images to other cell level data, which incl
 
 But there are some disadvantages, such as that `terra` is built for geography so it's difficult to perform affine transforms of the image (including rotation); in geography the transformation is performed by reprojecting the map and there are standards for the projections such as the Mercator and Robinson projections of the world map. So when the `SpatRasterImage` is rotated, it's converted into `ExtImage`, which can be converted back to `SpatRasterImage`. `BioFormatsImage` can also be converted into `SpatRasterImage` though that goes through `ExtImage`. 
 
-`ExtImage` is a thin wrapper around the [`Image`](https://bioconductor.org/packages/release/bioc/vignettes/EBImage/inst/doc/EBImage-introduction.html#3_Image_data_representation) class in the `EBImage` package to conform to SPE's requirements and to add a spatial extent. With `ExtImage`, one can do thresholding and morphological operations. However, it's not merely a wrapper; it contains another metadata field for the extent. When `BioFormatsImage` is loaded into memory, it becomes `EBImage`.
+`ExtImage` is a thin wrapper around the [`Image`](https://bioconductor.org/packages/release/bioc/vignettes/EBImage/inst/doc/EBImage-introduction.html#3_Image_data_representation) class in the `EBImage` package to conform to SPE's requirements and to add a spatial extent. With `ExtImage`, one can do thresholding and morphological operations. However, it's not merely a wrapper; it contains another essential metadata field for the extent. When `BioFormatsImage` is loaded into memory, it becomes `EBImage`.
 
 Here we convert this image into `ExtImage`, and plot it with the `EBImage` package; the `normalize()` function is called because `display()` expects the values to be between 0 and 1.
 ```{r}
@@ -765,53 +708,7 @@ plotSpatialFeature(sfe_cropped, genes_use[6], colGeometryName = "cellSeg",
                    channel = 3:1, dark = TRUE)
 ```
 
-Don't like those tiny slivers of cells at the boundary of the bounding box? We can also keep any cell that intersects with the bounding box and with larger datasets, this is much faster than finding the actual intersection geometries. The `keep_whole` argument makes sure that the cells are kept whole; "col" because it can also be "annot" to keep `annotGeometry` items (e.g. cell segmentation in Visium datasets) whole.
-```{r}
-sfe_cropped2 <- crop(sfe_xen, bbox, colGeometryName = "cellSeg",
-                     keep_whole = "col")
-```
-
-```{r}
-plotSpatialFeature(sfe_cropped2, genes_use[6], colGeometryName = "cellSeg", 
-                   rowGeometryName = "txSpots", image_id = "morphology_focus",
-                   fill = NA, aes_use = "color", 
-                   tx_fixed = list(color = "lightgray"),
-                   channel = 3:1, dark = TRUE) +
-    geom_sf(data = st_as_sfc(st_bbox(bbox)), fill = NA, color = "red", 
-            linewidth = 0.5)
-```
-
-Here the original bounding box is shown in red and the cells that partially overlap are not cropped.
-
-We can also only keep cells covered by (i.e. entirely within) the bounding box
-
-```{r}
-sfe_cropped3 <- crop(sfe_xen, bbox, colGeometryName = "cellSeg",
-                     keep_whole = "col", cover = TRUE)
-```
-
-```{r}
-plotSpatialFeature(sfe_cropped3, genes_use[6], colGeometryName = "cellSeg", 
-                   rowGeometryName = "txSpots", image_id = "morphology_focus",
-                   fill = NA, aes_use = "color", 
-                   tx_fixed = list(color = "lightgray"),
-                   channel = 3:1, dark = TRUE)
-```
-
-We can also use a geometry to remove a part of the data by specifying `op = st_difference`; `keep_whole` and `cover` still apply.
-
-```{r}
-sfe_hole <- crop(sfe_xen, bbox, colGeometryName = "cellSeg", 
-                 op = st_difference)
-```
-
-```{r}
-plotSpatialFeature(sfe_hole, genes_use[6], colGeometryName = "cellSeg", 
-                   rowGeometryName = "txSpots", image_id = "morphology_focus",
-                   fill = NA, aes_use = "color", 
-                   tx_fixed = list(color = "lightgray"),
-                   channel = 3:1, dark = TRUE)
-```
+See documentation of `SpatialFeatureExperiment::crop()` for more options, such as only keeping cells entirely contained in the polygon used for cropping and using a geometry to exclude rather than include cells.
 
 ## Transformation
 
@@ -930,7 +827,7 @@ plotSpatialFeature(sfes[[length(sfes)]], "total_count")
 ```
 
 
-The results are in the `colFeatureData` field.
+The results for `colData` variables are in the `colFeatureData` field.
 ```{r}
 sfes <- lapply(sfes, colDataMoransI, colGraphName = "rook", feature = "total_count")
 sfes <- lapply(sfes, colDataMoransI, colGraphName = "queen", feature = "total_count",
@@ -1051,6 +948,8 @@ For gene expression, global spatial results are stored in `rowData`.
 ```{r}
 rowData(sfes_pieces[[1]])
 ```
+
+Global spatial statistics return one result for the entire sample, regardless of local heterogeneity. Local spatial statistics such as [local Moran's I](https://pachterlab.github.io/voyager/articles/localmoran_landing.html) return one result for each location such as cell or bin or spot. The results are stored in the `localResults` field in SFE objects, whose getters and setters are similar to those of `reducedDims` and whose plotting function `plotLocalResult()` is very similar to `plotSpatialFeature()`.
 
 ```{r}
 morans_pieces <- cbind(rowData(sfes_pieces[[1]])[,c("Symbol", "Type", "moran_sample01")],
