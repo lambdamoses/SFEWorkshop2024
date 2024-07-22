@@ -25,6 +25,7 @@ RoxygenNote: 7.1.0
 Depends: 
     Biobase
 Suggests: 
+    arrow,
     BiocNeighbors,
     BiocParallel,
     BiocStyle,
@@ -39,6 +40,7 @@ Suggests:
     metrica,
     patchwork,
     pkgdown,
+    RBioFormats,
     rjson,
     rmarkdown,
     scales,
@@ -50,6 +52,7 @@ Suggests:
     SFEData,
     SingleCellExperiment,
     sparseMatrixStats,
+    SpatialExperiment,
     SpatialFeatureExperiment,
     stringr,
     terra,
