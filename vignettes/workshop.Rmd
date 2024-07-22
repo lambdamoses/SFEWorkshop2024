@@ -549,13 +549,14 @@ plotSpatialFeature(sfe_xen, genes_use, colGeometryName = "cellSeg",
                    bbox = bbox)
 ```
 
-Note that some transcript spots are not in cells; spots in `rowGeometires` don't have to be assigned to cells.
+Note that some transcript spots are not in cells; spots in `rowGeometires` don't have to be assigned to cells. While the transcript spots of this data subset fits into memory, when the GDAL Parquet driver is available, the plotting functions can call `readSelectTx()` behind the scene to only selectively read transcripts from a few genes rather than all genes.
 
 Transcript spot density can be plotted in a 2D histogram, here using 20 micron hexagonal grid
 ```{r}
 plotTxBin2D(sfe_xen, binwidth = 20, hex = TRUE)
 ```
 
+Here transcript spots are `sf` data frames. Recent versions of `sf` can convert`sf` to objects in the [`spatstat`](https://spatstat.org) package for [spatial point pattern analyses](https://r-spatial.org/book/11-PointPattern.html).
 
 # Images
 In SPE, the images are only used for visualization, but SFE extended the SPE image functionality so large images don't have to be loaded into memory unless necessary. SFE is extensible; more image classes can be implemented by inheriting from the virtual class `AlignedSpatialImage`; "aligned" because a spatial extent must be specified to align the image to the geometries, just like the satellite image aligned to vector geometries of roads and city boundaries. At present, the SFE package implements 3 types of images: `SpatRasterImage`, `BioFormatsImage`, and `ExtImage`.

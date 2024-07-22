@@ -51,7 +51,7 @@ Suggests:
     SingleCellExperiment,
     sparseMatrixStats,
     SpatialFeatureExperiment,
-    stringr
+    stringr,
     terra,
     tibble,
     tidyr,
