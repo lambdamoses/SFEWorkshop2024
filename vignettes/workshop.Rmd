@@ -267,7 +267,7 @@ sfe_xen <- sfe_xen[rowSums(counts(sfe_xen)) > 0,]
 dim(sfe_xen)
 ```
 
-PCA is part of the standard scRNA-seq data analysis workflow. Here we'll first normalize the data and then perform PCA and get the PCA results.
+PCA is part of the standard scRNA-seq data analysis workflow. Here we'll first normalize the data and then perform PCA and get the PCA results. Using cell area as size factors comes from [this paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-024-03303-w); using total counts as in scRNA-seq is inappropriate when we have a curated gene panel and can blunt biological signals.
 ```{r}
 sfe_xen <- logNormCounts(sfe_xen, size.factors = sfe_xen$cell_area)
 # Log counts getter
@@ -835,6 +835,7 @@ sfes <- lapply(sfes, colDataMoransI, colGraphName = "queen", feature = "total_co
 # Use name argument to store results under non-default name
 colFeatureData(sfes[[2]])
 ```
+
 ```{r}
 morans_rook <- vapply(sfes, 
                       function(sfe) 
@@ -904,11 +905,11 @@ The opposite of aggregate would be split. While it's possible to split SFE objec
 
 We can split by polygons that indicate different pieces of tissue; cells that intersect with different polygons will go to different SFE objects
 ```{r}
-sfes_pieces <- splitByCol(sfe_xen, pieces)
+ggplot(pieces) + geom_sf()
 ```
 
 ```{r}
-rowGeometries(sfes_pieces[[2]])
+sfes_pieces <- splitByCol(sfe_xen, pieces)
 ```
 
 ```{r}
@@ -919,20 +920,7 @@ plotGeometry(sfe2, colGeometryName = "cellSeg")
 ```
 
 ```{r}
-colGraphNames(sfe2)
-```
-
-```{r}
 plotColGraph(sfe2, "knn")
-```
-
-We can also split SFE objects by contiguity of an annotGeometry
-```{r}
-annotGeometryNames(sfe_xen)
-```
-
-```{r}
-(sfes_cont <- splitContiguity(sfe_xen, annotGeometryName = "pieces"))
 ```
 
 ## ESDA to compare samples
