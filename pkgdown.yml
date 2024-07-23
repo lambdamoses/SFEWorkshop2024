@@ -3,7 +3,7 @@ pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   workshop: workshop.html
-last_built: 2024-07-23T12:59Z
+last_built: 2024-07-23T17:35Z
 urls:
   reference: https://lambdamoses.github.io/SFEWorkshop2024/reference
   article: https://lambdamoses.github.io/SFEWorkshop2024/articles
