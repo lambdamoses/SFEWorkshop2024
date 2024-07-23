@@ -72,7 +72,7 @@ library(metrica)
 theme_set(theme_bw())
 ```
 
-The material here is either taken from the documentation websites of [`SpatialFeatureExperiment`](https://pachterlab.github.io/SpatialFeatureExperiment/) and [`Voyager`](https://pachterlab.github.io/voyager/) (release version; devel version: [SFE](https://pachterlab.github.io/SpatialFeatureExperiment/dev/), [`Voyager`](https://pachterlab.github.io/voyager/dev/)) or will be added to them. Some topics are covered in more details on the documentation websites.
+The material here is either taken from the documentation websites of [`SpatialFeatureExperiment`](https://pachterlab.github.io/SpatialFeatureExperiment/) and [`Voyager`](https://pachterlab.github.io/voyager/) (release version; devel version: [SFE](https://pachterlab.github.io/SpatialFeatureExperiment/dev/), [`Voyager`](https://pachterlab.github.io/voyager/dev/)) or will be added to them. Some topics are covered in more details on the documentation websites. A rendered version of the workshop can be seen [here](https://lambdamoses.github.io/SFEWorkshop2024/).
 
 # SFE object construction
 ## From scratch
