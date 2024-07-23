@@ -337,9 +337,9 @@ type Yes to download the dataset</em>:</p>
 <span><span class="va">dir_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SFEData/man/VizgenOutput.html" class="external-link">VizgenOutput</a></span><span class="op">(</span>file_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">fp</span>, <span class="st">"vizgen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; see ?SFEData and browseVignettes('SFEData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
-<span><span class="co">#&gt; The downloaded files are in /tmp/Rtmp41SWeX/vizgen/vizgen_cellbound</span></span>
+<span><span class="co">#&gt; The downloaded files are in /tmp/RtmpxeSCEX/vizgen/vizgen_cellbound</span></span>
 <span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">dir_use</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp41SWeX/vizgen/vizgen_cellbound</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpxeSCEX/vizgen/vizgen_cellbound</span></span></span>
 <span><span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">cell_boundaries</span></span></span>
 <span><span class="co">#&gt; │   ├── feature_data_z2_z3_1.hdf5</span></span>
 <span><span class="co">#&gt; │   ├── feature_data_z2_z3_2.hdf5</span></span>
@@ -371,8 +371,8 @@ called separately.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">sfe_mer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialFeatureExperiment/man/readVizgen.html" class="external-link">readVizgen</a></span><span class="op">(</span><span class="va">dir_use</span>, z <span class="op">=</span> <span class="fl">3L</span>, add_molecules <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; 1 `.parquet` files exist:</span></span>
-<span><span class="co">#&gt; /tmp/Rtmp41SWeX/vizgen/vizgen_cellbound/cell_boundaries.parquet</span></span>
-<span><span class="co">#&gt; &gt;&gt;&gt; using -&gt; /tmp/Rtmp41SWeX/vizgen/vizgen_cellbound/cell_boundaries.parquet</span></span>
+<span><span class="co">#&gt; /tmp/RtmpxeSCEX/vizgen/vizgen_cellbound/cell_boundaries.parquet</span></span>
+<span><span class="co">#&gt; &gt;&gt;&gt; using -&gt; /tmp/RtmpxeSCEX/vizgen/vizgen_cellbound/cell_boundaries.parquet</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; Cell segmentations are found in `.parquet` file</span></span>
 <span><span class="co">#&gt; Removing 35 cells with area less than 15</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; filtering geometries to match 1023 cells with counts &gt; 0</span></span>
@@ -408,7 +408,7 @@ the data next time, the transcript spots are written to a file
 the data resides:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">dir_use</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp41SWeX/vizgen/vizgen_cellbound</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpxeSCEX/vizgen/vizgen_cellbound</span></span></span>
 <span><span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">cell_boundaries</span></span></span>
 <span><span class="co">#&gt; │   ├── feature_data_z2_z3_1.hdf5</span></span>
 <span><span class="co">#&gt; │   ├── feature_data_z2_z3_2.hdf5</span></span>
@@ -455,9 +455,9 @@ and saves them as GeoParquet files.</p>
 <code class="sourceCode R"><span><span class="va">dir_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SFEData/man/XeniumOutput.html" class="external-link">XeniumOutput</a></span><span class="op">(</span><span class="st">"v2"</span>, file_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">fp</span>, <span class="st">"xenium"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; see ?SFEData and browseVignettes('SFEData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
-<span><span class="co">#&gt; The downloaded files are in /tmp/Rtmp41SWeX/xenium/xenium2</span></span>
+<span><span class="co">#&gt; The downloaded files are in /tmp/RtmpxeSCEX/xenium/xenium2</span></span>
 <span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">dir_use</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp41SWeX/xenium/xenium2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpxeSCEX/xenium/xenium2</span></span></span>
 <span><span class="co">#&gt; ├── <span style="color: #BB0000; font-weight: bold;">cell_boundaries.csv.gz</span></span></span>
 <span><span class="co">#&gt; ├── cell_boundaries.parquet</span></span>
 <span><span class="co">#&gt; ├── cell_feature_matrix.h5</span></span>
@@ -533,7 +533,7 @@ next time, nucleus segmentation to
 <code>tx_spots.parquet</code>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">dir_use</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp41SWeX/xenium/xenium2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpxeSCEX/xenium/xenium2</span></span></span>
 <span><span class="co">#&gt; ├── <span style="color: #BB0000; font-weight: bold;">cell_boundaries.csv.gz</span></span></span>
 <span><span class="co">#&gt; ├── cell_boundaries.parquet</span></span>
 <span><span class="co">#&gt; ├── cell_boundaries_sf.parquet</span></span>
@@ -1266,7 +1266,7 @@ retrieved:</p>
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">img</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/imgData-methods.html" class="external-link">getImg</a></span><span class="op">(</span><span class="va">sfe_mer</span>, image_id <span class="op">=</span> <span class="st">"PolyT_z3"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 695 x 695 x 1 (width x height x channels) SpatRasterImage</span></span>
 <span><span class="co">#&gt; imgSource():</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp41SWeX/vizgen/vizgen_cellbound/images/mosaic_PolyT_z3.tif</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpxeSCEX/vizgen/vizgen_cellbound/images/mosaic_PolyT_z3.tif</span></span></code></pre></div>
 <p>The <code><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-methods.html" class="external-link">imgData()</a></code> getter gets all images in the SFE object
 and displays a summary including image dimension and class</p>
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
@@ -1435,7 +1435,7 @@ commonly used raster package <code>stars</code>.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/imgData-methods.html" class="external-link">getImg</a></span><span class="op">(</span><span class="va">sfe_xen</span><span class="op">)</span></span>
 <span><span class="co">#&gt; X: 1207, Y: 1186, C: 4, Z: 1, T: 1, BioFormatsImage</span></span>
 <span><span class="co">#&gt; imgSource():</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp41SWeX/xenium/xenium2/morphology_focus/morphology_focus_0000.ome.tif</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpxeSCEX/xenium/xenium2/morphology_focus/morphology_focus_0000.ome.tif</span></span></code></pre></div>
 <p>While the images in the MERFISH dataset above only have 1 channel,
 this image has 4 channels, which are DAPI, ATP1A1/CD45/E-Cadherin, 18S,
 and AlphaSMA/Vimentin, in this order. The images are pyramids with
@@ -1595,7 +1595,7 @@ BioFormatsImage, which means there’s only metadata in memory.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/imgData-methods.html" class="external-link">getImg</a></span><span class="op">(</span><span class="va">sfe_affine</span><span class="op">)</span></span>
 <span><span class="co">#&gt; X: 1207, Y: 1186, C: 4, Z: 1, T: 1, BioFormatsImage</span></span>
 <span><span class="co">#&gt; imgSource():</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp41SWeX/xenium/xenium2/morphology_focus/morphology_focus_0000.ome.tif</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpxeSCEX/xenium/xenium2/morphology_focus/morphology_focus_0000.ome.tif</span></span></code></pre></div>
 <p>The affine transformation information is stored in the metadata and
 can be queried with <code><a href="https://rdrr.io/pkg/SpatialFeatureExperiment/man/BioFormatsImage-getters.html" class="external-link">transformation()</a></code></p>
 <div class="sourceCode" id="cb99"><pre class="downlit sourceCode r">
@@ -1653,7 +1653,7 @@ GeoParquet); here use hexagonal bins, size 20 microns:</p>
 <code class="sourceCode R"><span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SFEData/man/XeniumOutput.html" class="external-link">XeniumOutput</a></span><span class="op">(</span><span class="st">"v2"</span>, file_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">fp</span>, <span class="st">"xenium"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; see ?SFEData and browseVignettes('SFEData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
-<span><span class="co">#&gt; The downloaded files are in /tmp/Rtmp41SWeX/xenium/xenium2</span></span>
+<span><span class="co">#&gt; The downloaded files are in /tmp/RtmpxeSCEX/xenium/xenium2</span></span>
 <span><span class="va">sfe_agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialFeatureExperiment/man/aggregateTx.html" class="external-link">aggregateTxTech</a></span><span class="op">(</span><span class="va">data_dir</span>, tech <span class="op">=</span> <span class="st">"Xenium"</span>, cellsize <span class="op">=</span> <span class="fl">20</span>, </span>
 <span>                           square <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">sfe_agg</span></span>
