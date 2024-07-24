@@ -1,6 +1,6 @@
 Package: SFEWorkshop2024
 Title: Multiscale ESDA with SpatialFeatureExperiment and Voyager
-Version: 0.99.0
+Version: 1.0.0
 Authors@R: 
     c(person("Lambda", "Moses", email = "dl3764@columbia.edu", 
     role = c("aut", "cre"),
